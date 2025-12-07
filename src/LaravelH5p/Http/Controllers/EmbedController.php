@@ -21,6 +21,6 @@ class EmbedController extends Controller
 
         event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
-        return view('h5p.content.embed', compact('settings', 'user', 'embed_code'));
+        return view('laravel-h5p::content.embed', compact('settings', 'user', 'embed_code'));
     }
 }

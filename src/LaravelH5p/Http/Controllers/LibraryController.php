@@ -3,13 +3,13 @@
 namespace Djoudi\LaravelH5p\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Djoudi\LaravelH5p\Eloquents\H5pContent;
 use Djoudi\LaravelH5p\Eloquents\H5pLibrary;
 use H5PCore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class LibraryController extends Controller
 {
@@ -57,7 +57,9 @@ class LibraryController extends Controller
             $settings['libraryList']['notCached'] = 0;
         }
 
-        return view('h5p.library.index', compact('entrys', 'settings', 'last_update', 'hubOn', 'required_files'));
+        $hubOn = config('laravel-h5p.h5p_hub_is_enabled');
+
+        return view('laravel-h5p::library.index', compact('entrys', 'settings', 'last_update', 'hubOn', 'required_files'));
     }
 
     public function show(Request $request, $id)
@@ -105,12 +107,12 @@ class LibraryController extends Controller
 
         $required_files = $this->assets(['js/h5p-library-details.js']);
 
-        return view('h5p.library.show', compact('settings', 'required_files', 'library'));
+        return view('laravel-h5p::library.show', compact('settings', 'required_files', 'library'));
     }
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $request->validate([
             'h5p_file' => 'required||max:50000',
         ]);
 
@@ -125,23 +127,34 @@ class LibraryController extends Controller
             $skipContent = true;
             $h5p_upgrade_only = ($request->get('h5p_upgrade_only')) ? true : false;
 
-            rename($request->file('h5p_file')->getPathName(), $interface->getUploadedH5pPath());
 
-            if ($validator->isValidPackage($skipContent, $h5p_upgrade_only)) {
-                $storage = $h5p::$storage;
-                $storage->savePackage($content, null, $skipContent);
-                Log::info('All is OK ');
+
+            try {
+                rename($request->file('h5p_file')->getPathName(), $interface->getUploadedH5pPath());
+                if ($validator->isValidPackage($skipContent, $h5p_upgrade_only)) {
+                    $storage = $h5p::$storage;
+                    $storage->savePackage($content, null, $skipContent);
+                    Log::info('All is OK ');
+                    
+                    @unlink($interface->getUploadedH5pPath());
+                    return redirect()
+                        ->route('h5p.library.index')
+                        ->with('success', trans('laravel-h5p.library.updated'));
+                } else {
+                    Log::error('H5P Validation failed');
+                    @unlink($interface->getUploadedH5pPath());
+                    return redirect()
+                        ->route('h5p.library.index')
+                        ->with('error', 'H5P Package Validation Failed');
+                }
+            } catch (\Exception $e) {
+                Log::error('H5P Error: ' . $e->getMessage());
+                Log::error($e->getTraceAsString());
+                @unlink($interface->getUploadedH5pPath());
+                 return redirect()
+                    ->route('h5p.library.index')
+                    ->with('error', 'Error: ' . $e->getMessage());
             }
-
-//            if ($request->get('sync_hub')) {
-            //                $h5p::$core->updateContentTypeCache();
-            //            }
-            // The uploaded file was not a valid H5P package
-            @unlink($interface->getUploadedH5pPath());
-
-            return redirect()
-                ->route('h5p.library.index')
-                ->with('success', trans('laravel-h5p.library.updated'));
         }
 
         Log::info('Not Good Good ');
@@ -216,7 +229,7 @@ class LibraryController extends Controller
 
     private function assets($scripts = [], $styles = [])
     {
-        $prefix = 'assets/vendor/h5p/h5p-core/';
+        $prefix = url('assets/vendor/h5p/h5p-core') . '/';
         $return = [
             'scripts' => [],
             'styles'  => [],

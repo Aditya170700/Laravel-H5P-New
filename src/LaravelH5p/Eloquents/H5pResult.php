@@ -16,4 +16,15 @@ class H5pResult extends Model
         'finished',
         'time',
     ];
+    public $timestamps = false;
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function content()
+    {
+        return $this->belongsTo(H5pContent::class, 'content_id');
+    }
 }

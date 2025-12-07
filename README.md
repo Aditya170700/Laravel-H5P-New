@@ -1,71 +1,128 @@
-[![StyleCI](https://styleci.io/repos/122313672/shield?branch=master)](https://styleci.io/repos/122313672)
-[![Build Status](https://travis-ci.org/djoudi/Laravel-H5P.svg?branch=master)](https://travis-ci.org/djoudi/Laravel-H5P)
-[![Scrutinizer Coverage](https://scrutinizer-ci.com/g/djoudi/Laravel-H5P/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/djoudi/Laravel-H5P/?branch=master)
+# Laravel H5P Pro
 
+A comprehensive Laravel package for H5P interactive content with xAPI/LRS support.
 
+## ✨ Features
 
-# H5P Plugin in Laravel Framework 
+- 📦 H5P Content Management (Create, Edit, Delete)
+- 📚 Library Management
+- 📊 Student Results Tracking
+- 🔗 xAPI/LRS Integration
+- 📈 Reports & Analytics
+- 🎨 Tailwind CSS Admin Interface
+- 🌍 Multi-language Support (EN, AR, FR)
 
-## Description
+## 📋 Requirements
 
+- PHP 8.2+
+- Laravel 11/12
+- PostgreSQL/MySQL
 
+## 🚀 Installation
 
-## Installation
-
-Require it in the Composer.
+### 1. Install via Composer
 
 ```bash
 composer require djoudi/laravel-h5p
 ```
 
-Publish the Views, Config and so things.
+### 2. Run Installation Command
 
 ```bash
-php artisan vendor:publish
+php artisan h5p:install
 ```
 
-Migrate the Database
+This will:
+- Publish configuration files
+- Run database migrations
+- Create storage directories
+- Link storage to public
+
+### 3. Check Installation Status
 
 ```bash
-php artisan migrate
+php artisan h5p:status
 ```
 
-Add to Composer-Classmap:
+## ⚙️ Configuration
+
+### Environment Variables
+
+Add to your `.env`:
+
+```env
+# H5P Settings
+H5P_STORAGE_PATH=h5p
+
+# LRS/xAPI Integration (Optional)
+LRS_ENABLED=true
+LRS_ENDPOINT=https://your-lrs.com/data/xAPI
+LRS_USERNAME=your-key
+LRS_PASSWORD=your-secret
+```
+
+## 📖 Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `php artisan h5p:install` | Full installation with migrations |
+| `php artisan h5p:publish --force` | Republish assets and config |
+| `php artisan h5p:cleanup --temp` | Clean temporary files |
+| `php artisan h5p:cleanup --unused` | Remove unused libraries |
+| `php artisan h5p:status` | Show installation status |
+
+## 🔧 Usage
+
+### Admin Routes
+
+| Route | Description |
+|-------|-------------|
+| `/h5p/library` | Manage H5P libraries |
+| `/admin/h5p` | Manage H5P content |
+| `/admin/reports` | View reports |
+
+### Student Routes
+
+| Route | Description |
+|-------|-------------|
+| `/lesson/{id}` | View H5P content |
+
+### Programmatic Usage
+
 ```php
-'classmap': [
-    "vendor/h5p/h5p-core/h5p-default-storage.class.php",
-    "vendor/h5p/h5p-core/h5p-development.class.php",
-    "vendor/h5p/h5p-core/h5p-event-base.class.php",
-    "vendor/h5p/h5p-core/h5p-file-storage.interface.php",
-    "vendor/h5p/h5p-core/h5p.classes.php",
-    "vendor/h5p/h5p-editor/h5peditor-ajax.class.php",
-    "vendor/h5p/h5p-editor/h5peditor-ajax.interface.php",
-    "vendor/h5p/h5p-editor/h5peditor-file.class.php",
-    "vendor/h5p/h5p-editor/h5peditor-storage.interface.php",
-    "vendor/h5p/h5p-editor/h5peditor.class.php"
-],
+use Illuminate\Support\Facades\App;
+
+// Get H5P instance
+$h5p = App::make('LaravelH5p');
+
+// Get content
+$content = $h5p->get_content($id);
+
+// Get embed code
+$embed = $h5p->get_embed($content, $settings);
 ```
 
-```php
-'providers' => [
-    Djoudi\LaravelH5p\LaravelH5pServiceProvider::class,
-];
+## 🔗 xAPI/LRS Integration
+
+When LRS is enabled, student results are automatically sent to your LRS:
+
+1. Set `LRS_ENABLED=true` in `.env`
+2. Configure LRS credentials
+3. Run queue worker: `php artisan queue:work`
+
+## 📁 Directory Structure
+
+```
+storage/app/public/h5p/
+├── content/      # H5P content files
+├── libraries/    # H5P libraries
+└── temp/         # Temporary files
 ```
 
-For linux
-```bash
-cd public/vendor/h5p
-ln -s ../../../storage/h5p/content
-ln -s ../../../storage/h5p/editor
-ln -s ../../../storage/h5p/libraries
-```
-For windows
-```cmd admin window
-cd public/vendor/h5p
-mklink /d content ..\..\..\storage\h5p\content
-mklink /d editor ..\..\..\storage\h5p\editor
-mklink /d libraries ..\..\..\storage\h5p\libraries
-```
+## 🤝 Contributing
 
-## Demo
-you can see a demo  at : https://github.com/djoudi/laravel-h5p-demo
+Contributions are welcome! Please read our contributing guidelines.
+
+## 📄 License
+
+MIT License - see LICENSE file.

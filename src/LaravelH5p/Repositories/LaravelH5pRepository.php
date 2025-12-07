@@ -24,6 +24,7 @@ use Djoudi\LaravelH5p\Events\H5pEvent;
 use Djoudi\LaravelH5p\Helpers\H5pHelper;
 use GuzzleHttp\Client;
 use H5PFrameworkInterface;
+use H5PPermission;
 use Illuminate\Support\Facades\App;
 
 class LaravelH5pRepository implements H5PFrameworkInterface
@@ -767,44 +768,71 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements fetchExternalData.
      */
-    public function fetchExternalData($url, $data = null, $blocking = true, $stream = null)
+    public function fetchExternalData($url, $data = null, $blocking = true, $stream = null, $fullData = false, $headers = [], $files = [], $method = 'POST')
     {
         @set_time_limit(0);
         $options = [
             'timeout'  => !empty($blocking) ? 30 : 0.01,
             'stream'   => !empty($stream),
             'filename' => !empty($stream) ? $stream : false,
+            'verify'   => false, // Skip SSL verification for dev/local
         ];
+
+        if (!empty($headers)) {
+            $options['headers'] = $headers;
+        }
 
         $client = new Client();
 
         try {
-            if ($data !== null) {
-                // Post
-                $options['body'] = $data;
-                $response = $client->request('POST', $url, ['form_params' => $options]);
+            if ($data !== null || !empty($files)) {
+                // Post or Multipart
+                if (!empty($files)) {
+                    $multipart = [];
+                    foreach ($data as $key => $value) {
+                        $multipart[] = ['name' => $key, 'contents' => $value];
+                    }
+                    foreach ($files as $file) {
+                        $multipart[] = [
+                            'name'     => $file['name'],
+                            'contents' => fopen($file['path'], 'r'),
+                            'filename' => $file['originalName'] ?? basename($file['path'])
+                        ];
+                    }
+                    $options['multipart'] = $multipart;
+                } elseif ($data !== null) {
+                    $options['form_params'] = $data;
+                }
+                
+                $response = $client->request($method, $url, $options);
             } else {
                 // Get
                 if (empty($options['filename'])) {
-                    // Support redirects
-                    //                $response = wp_remote_get($url);
-                    $response = $client->request('GET', $url);
+                    $response = $client->request('GET', $url, $options);
                 } else {
-                    // Use safe when downloading files
-                    //                $response = wp_safe_remote_get($url, $options);
+                    $options['sink'] = $options['filename']; // Guzzle uses 'sink' for downloading
+                    unset($options['filename']);
                     $response = $client->request('GET', $url, $options);
                 }
             }
 
             if ($response->getStatusCode() === 200) {
-                return empty($response->getBody()) ? true : $response->getBody();
-            } else {
-                return;
+                 if ($fullData) {
+                    return [
+                        'status' => $response->getStatusCode(),
+                        'data'   => (string) $response->getBody(),
+                    ];
+                }
+                return empty($response->getBody()) ? true : (string) $response->getBody();
             }
-        } catch (RequestException $e) {
+        } catch (\Exception $e) {
+            // Log::error($e->getMessage());
             return false;
         }
+        
+        return false;
     }
+
 
     /**
      * Implements setLibraryTutorialUrl.
@@ -1010,7 +1038,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 tutorial,
                 keywords,
                 categories,
-                owner) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+                owner) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                 $ct->id,
                 $ct->version->major,
                 $ct->version->minor,
@@ -1021,8 +1049,8 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 $ct->summary,
                 $ct->description,
                 $ct->icon,
-                (new DateTime($ct->createdAt))->getTimestamp(),
-                (new DateTime($ct->updatedAt))->getTimestamp(),
+                (new \DateTime($ct->createdAt))->getTimestamp(),
+                (new \DateTime($ct->updatedAt))->getTimestamp(),
                 $ct->isRecommended === true ? 1 : 0,
                 $ct->popularity,
                 json_encode($ct->screenshots),
@@ -1034,5 +1062,75 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 $ct->owner, ]
             );
         }
+    }
+
+    /**
+     * Implements replaceContentHubMetadataCache.
+     */
+    public function replaceContentHubMetadataCache($metadata, $lang)
+    {
+        $this->replaceContentTypeCache($metadata);
+    }
+
+    /**
+     * Implements getContentHubMetadataCache.
+     */
+    public function getContentHubMetadataCache($lang = 'en')
+    {
+        $results = DB::table('h5p_libraries_hub_cache')->get();
+        $cache = [];
+        foreach ($results as $item) {
+             $cache[] = (object) [
+                 'id' => $item->machine_name,
+                 'machineName' => $item->machine_name,
+                 'title' => $item->title,
+                 'majorVersion' => $item->major_version,
+                 'minorVersion' => $item->minor_version,
+                 'patchVersion' => $item->patch_version,
+                 'h5pMajorVersion' => $item->h5p_major_version,
+                 'h5pMinorVersion' => $item->h5p_minor_version,
+                 'summary' => $item->summary,
+                 'description' => $item->description,
+                 'icon' => $item->icon,
+                 'createdAt' => $item->created_at,
+                 'updatedAt' => $item->updated_at,
+                 'isRecommended' => (bool)$item->is_recommended,
+                 'popularity' => $item->popularity,
+                 'screenshots' => json_decode($item->screenshots),
+                 'license' => json_decode($item->license),
+                 'example' => $item->example,
+                 'tutorial' => $item->tutorial,
+                 'keywords' => json_decode($item->keywords),
+                 'categories' => json_decode($item->categories),
+                 'owner' => $item->owner,
+                 'version' => (object)[
+                      'major' => $item->major_version,
+                      'minor' => $item->minor_version,
+                      'patch' => $item->patch_version,
+                 ],
+                 'coreApiVersionNeeded' => (object)[
+                      'major' => $item->h5p_major_version,
+                      'minor' => $item->h5p_minor_version,
+                 ]
+             ];
+        }
+        return $cache;
+    }
+
+    /**
+     * Implements getContentHubMetadataChecked.
+     */
+    public function getContentHubMetadataChecked($lang = 'en')
+    {
+        return \Illuminate\Support\Facades\Cache::get('h5p_content_hub_metadata_checked_'.$lang);
+    }
+
+    /**
+     * Implements setContentHubMetadataChecked.
+     */
+    public function setContentHubMetadataChecked($time, $lang = 'en')
+    {
+        \Illuminate\Support\Facades\Cache::put('h5p_content_hub_metadata_checked_'.$lang, $time);
+        return true;
     }
 }

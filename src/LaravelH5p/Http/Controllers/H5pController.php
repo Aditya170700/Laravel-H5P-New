@@ -32,7 +32,7 @@ class H5pController extends Controller
         $entrys = $where->paginate(10);
         $entrys->appends(['sf' => $request->query('sf'), 's' => $request->query('s')]);
 
-        return view('h5p.content.index', compact('entrys', 'request', 'search_fields'));
+        return view('laravel-h5p::content.index', compact('entrys', 'request', 'search_fields'));
     }
 
     public function create(Request $request)
@@ -54,7 +54,7 @@ class H5pController extends Controller
 
         $user = Auth::user();
 
-        return view('h5p.content.create', compact('settings', 'user', 'library', 'parameters', 'display_options'));
+        return view('laravel-h5p::content.create', compact('settings', 'user', 'library', 'parameters', 'display_options'));
     }
 
     public function store(Request $request)
@@ -63,7 +63,7 @@ class H5pController extends Controller
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
 
-        $this->validate($request, [
+        $request->validate([
             'title'  => 'required|max:250',
             'action' => 'required',
         ], [], [
@@ -170,7 +170,7 @@ class H5pController extends Controller
 
         $user = Auth::user();
 
-        return view('h5p.content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
+        return view('laravel-h5p::content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
     }
 
     public function update(Request $request, $id)
@@ -179,7 +179,7 @@ class H5pController extends Controller
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
 
-        $this->validate($request, [
+        $request->validate([
             'title'  => 'required|max:250',
             'action' => 'required',
         ], [], [
@@ -275,7 +275,7 @@ class H5pController extends Controller
         event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
         //     return view('h5p.content.edit', compact("settings", 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
-        return view('h5p.content.show', compact('settings', 'user', 'embed_code', 'title'));
+        return view('laravel-h5p::content.show', compact('settings', 'user', 'embed_code', 'title'));
     }
 
     public function destroy(Request $request, $id)

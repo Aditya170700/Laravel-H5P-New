@@ -593,4 +593,15 @@ class LaravelH5pStorage implements H5PFileStorage
     {
         return true;
     }
+
+    /**
+     * Delete library folder.
+     *
+     * @param array $library
+     */
+    public function deleteLibrary($library)
+    {
+        $dest = $this->path.'/libraries/'.\H5PCore::libraryToString($library, true);
+        \H5PCore::deleteFileTree($dest);
+    }
 }

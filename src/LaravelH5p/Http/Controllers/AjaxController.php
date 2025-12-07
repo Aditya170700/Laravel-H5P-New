@@ -52,6 +52,13 @@ class AjaxController extends Controller
         $editor->ajax->action(H5PEditorEndpoints::CONTENT_TYPE_CACHE, $request->get('_token'));
     }
 
+    public function contentHubMetadataCache(Request $request)
+    {
+        $h5p = App::make('LaravelH5p');
+        $editor = $h5p::$h5peditor;
+        $editor->ajax->action(H5PEditorEndpoints::CONTENT_HUB_METADATA_CACHE, $request->get('_token'));
+    }
+
     public function libraryInstall(Request $request)
     {
         $h5p = App::make('LaravelH5p');

@@ -27,20 +27,20 @@
 
 @endsection
 
-@push( 'h5p-header-script' )
+@push( 'h5p-header' )
     @foreach($required_files['styles'] as $style)
-    {{ Html::style($style) }}
+    <link rel="stylesheet" href="{{ $style }}">
     @endforeach
 @endpush
 
-@push( 'h5p-footer-script' )
+@push( 'h5p-footer' )
     <script type="text/javascript">
         H5PAdminIntegration = {!! json_encode($settings) !!};
     </script>
 
     {{--    core script       --}}
     @foreach($required_files['scripts'] as $script)
-    {{ Html::script($script) }}
+    <script src="{{ $script }}"></script>
     @endforeach
 
 @endpush

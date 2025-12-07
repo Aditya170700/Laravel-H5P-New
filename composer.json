@@ -1,6 +1,6 @@
 {
     "name": "djoudi/laravel-h5p",
-    "description": "H5P Plugin for laravel platform",
+    "description": "H5P Plugin for Laravel platform - Updated for Laravel 12",
     "type": "library",
     "authors": [
         {
@@ -17,29 +17,25 @@
         }
     },
     "require": {
-        "php": "^7.2",
-        "laravel/framework": "7.*",
-        "laravelcollective/html": "7.0",
-         "h5p/h5p-core": "^1.24.0",
-         "h5p/h5p-editor": "^1.24.0",
-        "guzzlehttp/guzzle": "^6.2"
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "h5p/h5p-core": "^1.24",
+        "h5p/h5p-editor": "^1.24",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.8",
-        "mockery/mockery": "1.2.*",
-        "phpunit/phpunit": "~7.0",
-        "xethron/migrations-generator": "^2.0"
+        "fakerphp/faker": "^1.23",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^11.0"
     },
-
-     "extra": {
+    "extra": {
         "laravel": {
             "providers": [
                 "Djoudi\\LaravelH5p\\LaravelH5pServiceProvider"
             ],
             "aliases": {
-                "LaravelH5p": "Djoudi\\LaravelH5p\\Facades"
+                "LaravelH5p": "Djoudi\\LaravelH5p\\Facades\\LaravelH5p"
             }
         }
     }
-
 }
