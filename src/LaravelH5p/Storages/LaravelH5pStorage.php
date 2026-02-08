@@ -10,7 +10,7 @@
  *
  */
 
-namespace Djoudi\LaravelH5p\Storages;
+namespace Aditya\LaravelH5P\Storages;
 
 use H5PFileStorage;
 

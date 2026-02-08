@@ -1,10 +1,10 @@
 <?php
 
-namespace Djoudi\LaravelH5p\Console\Commands;
+namespace Aditya\LaravelH5P\Console\Commands;
 
-use Djoudi\LaravelH5p\Eloquents\H5pContent;
-use Djoudi\LaravelH5p\Eloquents\H5pLibrary;
-use Djoudi\LaravelH5p\Eloquents\H5pResult;
+use Aditya\LaravelH5P\Eloquents\H5pContent;
+use Aditya\LaravelH5P\Eloquents\H5pLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pResult;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 

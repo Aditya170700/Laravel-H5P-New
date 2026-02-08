@@ -1,9 +1,9 @@
 <?php
 
-namespace Djoudi\LaravelH5p\Http\Controllers;
+namespace Aditya\LaravelH5P\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Djoudi\LaravelH5p\Events\H5pEvent;
+use Aditya\LaravelH5P\Events\H5pEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 

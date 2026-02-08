@@ -10,7 +10,7 @@
  *
  */
 
-namespace Djoudi\LaravelH5p\Exceptions;
+namespace Aditya\LaravelH5P\Exceptions;
 
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

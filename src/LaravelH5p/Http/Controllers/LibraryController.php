@@ -1,11 +1,11 @@
 <?php
 
-namespace Djoudi\LaravelH5p\Http\Controllers;
+namespace Aditya\LaravelH5P\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Djoudi\LaravelH5p\Eloquents\H5pContent;
-use Djoudi\LaravelH5p\Eloquents\H5pLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pContent;
+use Aditya\LaravelH5P\Eloquents\H5pLibrary;
 use H5PCore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;

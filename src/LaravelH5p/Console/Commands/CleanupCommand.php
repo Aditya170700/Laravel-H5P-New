@@ -1,8 +1,8 @@
 <?php
 
-namespace Djoudi\LaravelH5p\Console\Commands;
+namespace Aditya\LaravelH5P\Console\Commands;
 
-use Djoudi\LaravelH5p\Eloquents\H5pLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pLibrary;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Djoudi\LaravelH5p\Commands;
+namespace Aditya\LaravelH5P\Commands;
 
 use Illuminate\Console\Command;
 

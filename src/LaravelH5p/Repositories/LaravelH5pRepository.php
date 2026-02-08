@@ -10,18 +10,18 @@
  *
  */
 
-namespace Djoudi\LaravelH5p\Repositories;
+namespace Aditya\LaravelH5P\Repositories;
 
 use Carbon\Carbon;
 use DB;
-use Djoudi\LaravelH5p\Eloquents\H5pContent;
-use Djoudi\LaravelH5p\Eloquents\H5pContentsLibrary;
-use Djoudi\LaravelH5p\Eloquents\H5pContentsUserData;
-use Djoudi\LaravelH5p\Eloquents\H5pLibrariesLibrary;
-use Djoudi\LaravelH5p\Eloquents\H5pLibrary;
-use Djoudi\LaravelH5p\Eloquents\H5pResult;
-use Djoudi\LaravelH5p\Events\H5pEvent;
-use Djoudi\LaravelH5p\Helpers\H5pHelper;
+use Aditya\LaravelH5P\Eloquents\H5pContent;
+use Aditya\LaravelH5P\Eloquents\H5pContentsLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pContentsUserData;
+use Aditya\LaravelH5P\Eloquents\H5pLibrariesLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pLibrary;
+use Aditya\LaravelH5P\Eloquents\H5pResult;
+use Aditya\LaravelH5P\Events\H5pEvent;
+use Aditya\LaravelH5P\Helpers\H5pHelper;
 use GuzzleHttp\Client;
 use H5PFrameworkInterface;
 use H5PPermission;

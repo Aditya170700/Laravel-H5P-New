@@ -1,14 +1,14 @@
 <?php
 
-namespace Djoudi\LaravelH5p;
+namespace Aditya\LaravelH5P;
 
-use Djoudi\LaravelH5p\Commands\MigrationCommand;
-use Djoudi\LaravelH5p\Commands\ResetCommand;
-use Djoudi\LaravelH5p\Console\Commands\InstallCommand;
-use Djoudi\LaravelH5p\Console\Commands\PublishCommand;
-use Djoudi\LaravelH5p\Console\Commands\CleanupCommand;
-use Djoudi\LaravelH5p\Console\Commands\StatusCommand;
-use Djoudi\LaravelH5p\Helpers\H5pHelper;
+use Aditya\LaravelH5P\Commands\MigrationCommand;
+use Aditya\LaravelH5P\Commands\ResetCommand;
+use Aditya\LaravelH5P\Console\Commands\InstallCommand;
+use Aditya\LaravelH5P\Console\Commands\PublishCommand;
+use Aditya\LaravelH5P\Console\Commands\CleanupCommand;
+use Aditya\LaravelH5P\Console\Commands\StatusCommand;
+use Aditya\LaravelH5P\Helpers\H5pHelper;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelH5pServiceProvider extends ServiceProvider
