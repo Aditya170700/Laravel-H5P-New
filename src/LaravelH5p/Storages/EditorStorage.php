@@ -31,20 +31,41 @@ class EditorStorage implements H5peditorStorage
         $h5p->alter_assets($files, $libraries, 'editor');
     }
 
+    /**
+     * Return list of language codes that have translations for this library.
+     * Must return an array (never null) so the editor does not throw on .length.
+     */
     public function getAvailableLanguages($machineName, $majorVersion, $minorVersion)
     {
+        $library = H5pLibrary::where('name', $machineName)
+            ->where('major_version', $majorVersion)
+            ->where('minor_version', $minorVersion)
+            ->first();
+
+        if (!$library) {
+            return [];
+        }
+
+        $codes = DB::table('h5p_libraries_languages')
+            ->where('library_id', $library->id)
+            ->pluck('language_code')
+            ->toArray();
+
+        return is_array($codes) ? $codes : [];
     }
 
     public function getLanguage($machineName, $majorVersion, $minorVersion, $language)
     {
-//        $language = 'ja';
+        //        $language = 'ja';
         // Load translation field from DB
-        $return = DB::select('SELECT hlt.translation FROM h5p_libraries_languages hlt
+        $return = DB::select(
+            'SELECT hlt.translation FROM h5p_libraries_languages hlt
            JOIN h5p_libraries hl ON hl.id = hlt.library_id
           WHERE hl.name = ?
             AND hl.major_version = ?
             AND hl.minor_version = ?
-            AND hlt.language_code = ?', [$machineName, $majorVersion, $minorVersion, $language]
+            AND hlt.language_code = ?',
+            [$machineName, $majorVersion, $minorVersion, $language]
         );
 
         return $return ? $return[0]->translation : null;
@@ -109,8 +130,9 @@ class EditorStorage implements H5peditorStorage
                     if ($library->name === $existingLibrary->name) {
                         // Found library with same name, check versions
                         if (($library->majorVersion === $existingLibrary->majorVersion &&
-                            $library->minorVersion > $existingLibrary->minorVersion) ||
-                            ($library->majorVersion > $existingLibrary->majorVersion)) {
+                                $library->minorVersion > $existingLibrary->minorVersion) ||
+                            ($library->majorVersion > $existingLibrary->majorVersion)
+                        ) {
                             // This is a newer version
                             $existingLibrary->isOld = true;
                         } else {
@@ -144,12 +166,12 @@ class EditorStorage implements H5peditorStorage
             $path .= '/editor';
         } else {
             // Should be in content folder
-            $path .= '/content/'.$content_id;
+            $path .= '/content/' . $content_id;
         }
         // Add file type to path
-        $path .= '/'.$file->getType().'s';
+        $path .= '/' . $file->getType() . 's';
         // Add filename to path
-        $path .= '/'.$file->getName();
+        $path .= '/' . $file->getName();
 
         H5pTmpfile::create(['path' => $path, 'created_at' => time()]);
         // Keep track of temporary files so they can be cleaned up later.

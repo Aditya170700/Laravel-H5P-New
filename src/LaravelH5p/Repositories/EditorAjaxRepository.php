@@ -85,27 +85,42 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         }
     }
 
+    /**
+     * Gets latest version of all local runnable libraries (objects with has_icon, machine_name, etc.).
+     * Required by H5P editor mergeLocalLibsIntoCachedLibs(); must not return strings.
+     */
     public function getLatestLibraryVersions()
     {
-        $recently_used = [];
-        $result = DB::table('h5p_event_logs')
-            ->select([
-                'library_name',
-                DB::raw('max(created_at) AS max_created_at'),
-            ])
-            ->where('type', 'content')
-            ->where('sub_type', 'create')
-            ->where('user_id', Auth::id())
-            ->groupBy('library_name')
-            ->orderBy('max_created_at', 'DESC')
-            ->get();
+        $major_versions_sql = 'SELECT hl.name,
+                MAX(hl.major_version) AS majorVersion
+           FROM h5p_libraries hl
+          WHERE hl.runnable = 1
+       GROUP BY hl.name';
 
-        foreach ($result as $row) {
-            $recently_used[] = $row->library_name;
-        }
+        $minor_versions_sql = "SELECT hl2.name,
+                 hl2.major_version AS majorVersion,
+                 MAX(hl2.minor_version) AS minorVersion
+            FROM ({$major_versions_sql}) hl1
+            JOIN h5p_libraries hl2
+              ON hl1.name = hl2.name
+             AND hl1.majorVersion = hl2.major_version
+        GROUP BY hl2.name, hl2.major_version";
 
-        return $recently_used;
-
+        return DB::select("SELECT hl4.id,
+                hl4.name AS machine_name,
+                hl4.title,
+                hl4.major_version,
+                hl4.minor_version,
+                hl4.patch_version,
+                hl4.restricted,
+                hl4.has_icon,
+                0 AS patch_version_in_folder_name
+           FROM ({$minor_versions_sql}) hl3
+           JOIN h5p_libraries hl4
+             ON hl3.name = hl4.name
+            AND hl3.majorVersion = hl4.major_version
+            AND hl3.minorVersion = hl4.minor_version
+       GROUP BY hl4.id, hl4.name, hl4.title, hl4.major_version, hl4.minor_version, hl4.patch_version, hl4.restricted, hl4.has_icon");
     }
 
     public function validateEditorToken($token)
@@ -114,7 +129,5 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         return true;
     }
 
-    public function getTranslations($libraries, $language_code)
-    {
-    }
+    public function getTranslations($libraries, $language_code) {}
 }
