@@ -1,124 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- CSRF Token -->
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <script>
-            window.Laravel = <?php echo json_encode([ 'csrfToken' => csrf_token()]); ?>
-        </script>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url('css/app.css') }}"/>
+    <script>
+        window.Laravel = <?php echo json_encode(['csrfToken' => csrf_token()]); ?>
+    </script>
 
-        @stack('h5p-header-script')
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <!-- Bootstrap 3 for navbar (app.css not required) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
 
-        <!-- Styles -->
-        <style>
-            .full-height {
-                height: 100vh;
-            }
+    @stack('h5p-header-script')
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
+    <!-- Styles -->
+    <style>
+        .full-height {
+            height: 100vh;
+        }
 
-            .position-ref {
-                position: relative;
-            }
+        .flex-center {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+        }
 
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
+        .position-ref {
+            position: relative;
+        }
 
-            .content {
-                text-align: center;
-            }
+        .top-right {
+            position: absolute;
+            right: 10px;
+            top: 18px;
+        }
 
-            .title {
-                font-size: 84px;
-            }
+        .content {
+            text-align: center;
+        }
 
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
+        .title {
+            font-size: 84px;
+        }
 
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
+        .links>a {
+            color: #636b6f;
+            padding: 0 25px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
 
-    <body>
+        .m-b-md {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
 
-        <div  id="app" 
-              @if (Route::has('welcome'))
-              class="flex-center position-ref full-height"
-              @endif
-              >
+<body>
+
+    <div id="app" @if (Route::has('welcome')) class="flex-center position-ref full-height" @endif>
 
 
-              <nav class="navbar navbar-default navbar-static-top">
-                <div class="container">
-                    <div class="navbar-header">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
 
-                        <!-- Collapsed Hamburger -->
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                            <span class="sr-only">Toggle Navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
+                    <!-- Collapsed Hamburger -->
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#app-navbar-collapse">
+                        <span class="sr-only">Toggle Navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
 
-                        <!-- Branding Image -->
-                        <a class="navbar-brand" href="{{ url('/') }}">
-                            {{ config('app.name', 'LARAVEL-H5P') }}
-                        </a>
-                    </div>
+                    <!-- Branding Image -->
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                        {{ config('app.name', 'LARAVEL-H5P') }}
+                    </a>
+                </div>
 
-                    <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                        <!-- Left Side Of Navbar -->
-                        <ul class="nav navbar-nav">
-                            &nbsp;
-                        </ul>
+                <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                    <!-- Left Side Of Navbar -->
+                    <ul class="nav navbar-nav">
+                        &nbsp;
+                    </ul>
 
-                        <!-- Right Side Of Navbar -->
-                        <ul class="nav navbar-nav navbar-right">
+                    <!-- Right Side Of Navbar -->
+                    <ul class="nav navbar-nav navbar-right">
 
-                            <li><a href="/h5p" class="">H5P</a></li>
-                            <li><a href="/library" class="">H5P Library</a></li>
+                        <li><a href="/h5p" class="">H5P</a></li>
+                        <li><a href="/h5p/library" class="">H5P Library</a></li>
 
-                            <!-- Authentication Links -->
-                            @if (Auth::guest())
+                        <!-- Authentication Links -->
+                        @if (Auth::guest())
                             <li><a href="/login">Login</a></li>
                             <li><a href="/register">Register</a></li>
-                            @else
+                        @else
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
                                         <a href="/logout"
-                                           onclick="event.preventDefault();
+                                            onclick="event.preventDefault();
                                                    document.getElementById('logout-form').submit();">
                                             Logout
                                         </a>
@@ -129,18 +129,21 @@
                                     </li>
                                 </ul>
                             </li>
-                            @endif
-                        </ul>
-                    </div>
+                        @endif
+                    </ul>
                 </div>
-            </nav>
+            </div>
+        </nav>
 
-            @yield('h5p')
+        @yield('h5p')
 
-        </div>
+    </div>
 
-        <script type="text/javascript" src="{{ url('js/app.js') }}"></script>        
-        @stack('h5p-footer-script')
+    <!-- jQuery (required by H5P editor) + Bootstrap 3 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    @stack('h5p-footer-script')
 
-    </body>
+</body>
+
 </html>

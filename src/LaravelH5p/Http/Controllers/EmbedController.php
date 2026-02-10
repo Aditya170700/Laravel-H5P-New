@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Aditya\LaravelH5P\Events\H5pEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 class EmbedController extends Controller
 {
@@ -18,6 +19,7 @@ class EmbedController extends Controller
         $embed = $h5p->get_embed($content, $settings);
         $embed_code = $embed['embed'];
         $settings = $embed['settings'];
+        $user = Auth::user();
 
         event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 

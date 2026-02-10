@@ -1,46 +1,49 @@
-@extends( config('laravel-h5p.layout') )
+@extends(config('laravel-h5p.layout'))
 
-@section( 'h5p' )
-<div class="container-fluid">
-    <div class="row">
+@section('h5p')
+    <div class="container-fluid">
+        <div class="row">
 
-        <div class="col-md-12">
+            <div class="col-md-12">
 
-            <h3>{{ $library->title }}</h3>
+                <h3>{{ $library->title }}</h3>
 
-            <ul>
-                <li class=''>{{ trans('laravel-h5p.library.version') }} : {{ $settings['libraryInfo']['info']['version'] }}</li>
-                <li class=''>{{ trans('laravel-h5p.h5p.fullscreen') }} : {{ $settings['libraryInfo']['info']['fullscreen'] }}</li>
-                <li class=''> {{ trans('laravel-h5p.library.contents') }}: {{ $settings['libraryInfo']['info']['content_library'] }}</li>
-                <li class=''>{{ trans('laravel-h5p.library.contents_using_it') }}  : {{ $settings['libraryInfo']['info']['used'] }}</li>
-            </ul>
+                <ul>
+                    <li class=''>{{ trans('laravel-h5p.library.version') }} :
+                        {{ $settings['libraryInfo']['info']['version'] }}</li>
+                    <li class=''>{{ trans('laravel-h5p.h5p.fullscreen') }} :
+                        {{ $settings['libraryInfo']['info']['fullscreen'] }}</li>
+                    <li class=''> {{ trans('laravel-h5p.library.contents') }}:
+                        {{ $settings['libraryInfo']['info']['content_library'] }}</li>
+                    <li class=''>{{ trans('laravel-h5p.library.contents_using_it') }} :
+                        {{ $settings['libraryInfo']['info']['used'] }}</li>
+                </ul>
 
 
-            <a href="{{ route('h5p.library.index') }}" class="btn btn-default"><i class="fa fa-reply"></i> Go Back</a>
+                <a href="{{ route('h5p.library.index') }}" class="btn btn-default"><i class="fa fa-reply"></i> Go Back</a>
 
+
+            </div>
 
         </div>
 
     </div>
-
-</div>
-
 @endsection
 
-@push( 'h5p-header' )
-    @foreach($required_files['styles'] as $style)
-    <link rel="stylesheet" href="{{ $style }}">
+@push('h5p-header')
+    @foreach ($required_files['styles'] as $style)
+        <link rel="stylesheet" href="{{ $style }}">
     @endforeach
 @endpush
 
-@push( 'h5p-footer' )
+@push('h5p-footer')
     <script type="text/javascript">
         H5PAdminIntegration = {!! json_encode($settings) !!};
     </script>
 
     {{--    core script       --}}
-    @foreach($required_files['scripts'] as $script)
-    <script src="{{ $script }}"></script>
+    @foreach ($required_files['scripts'] as $script)
+        <script src="{{ $script }}"></script>
     @endforeach
 
 @endpush

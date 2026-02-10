@@ -21,7 +21,7 @@ class H5pController extends Controller
                 $where->where('h5p_contents.title', $request->query('s'));
             }
             if ($request->query('sf') == 'creator') {
-                $where->leftJoin('users', 'users.id', 'h5p_contents.user_id')->where('users.name', 'like', '%'.$request->query('s').'%');
+                $where->leftJoin('users', 'users.id', 'h5p_contents.user_id')->where('users.name', 'like', '%' . $request->query('s') . '%');
             }
         }
 
@@ -166,7 +166,7 @@ class H5pController extends Controller
         $settings = $h5p::get_editor($content);
 
         // create event dispatch
-        event(new H5pEvent('content', 'edit', $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'].'.'.$content['library']['minorVersion']));
+        event(new H5pEvent('content', 'edit', $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']));
 
         $user = Auth::user();
 
@@ -274,7 +274,7 @@ class H5pController extends Controller
         // create event dispatch
         event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
-        //     return view('h5p.content.edit', compact("settings", 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
+        $user = Auth::user();
         return view('laravel-h5p::content.show', compact('settings', 'user', 'embed_code', 'title'));
     }
 

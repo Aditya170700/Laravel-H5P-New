@@ -49,39 +49,42 @@ class LaravelH5pServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../../routes/laravel-h5p.php');
+        $this->loadRoutesFrom(__DIR__ . '/../../routes/laravel-h5p.php');
 
         // config
         $this->publishes([
-            __DIR__.'/../../config/laravel-h5p.php' => config_path('laravel-h5p.php'),
+            __DIR__ . '/../../config/laravel-h5p.php' => config_path('laravel-h5p.php'),
         ], 'laravel-h5p-config');
-        
+
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/laravel-h5p.php', 'laravel-h5p'
+            __DIR__ . '/../../config/laravel-h5p.php',
+            'laravel-h5p'
         );
 
-        // language files
+        // language files: load from package so translations work even if not published
+        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'laravel-h5p');
+
         $this->publishes([
-            __DIR__.'/../../lang/en/laravel-h5p.php' => lang_path('en/laravel-h5p.php'),
-            __DIR__.'/../../lang/fr/laravel-h5p.php' => lang_path('fr/laravel-h5p.php'),
-            __DIR__.'/../../lang/ar/laravel-h5p.php' => lang_path('ar/laravel-h5p.php'),
+            __DIR__ . '/../../lang/en/laravel-h5p.php' => lang_path('en/laravel-h5p.php'),
+            __DIR__ . '/../../lang/fr/laravel-h5p.php' => lang_path('fr/laravel-h5p.php'),
+            __DIR__ . '/../../lang/ar/laravel-h5p.php' => lang_path('ar/laravel-h5p.php'),
         ], 'laravel-h5p-lang');
 
         // views
-        $this->loadViewsFrom(__DIR__.'/../../views/h5p', 'laravel-h5p');
+        $this->loadViewsFrom(__DIR__ . '/../../views/h5p', 'laravel-h5p');
         $this->publishes([
-            __DIR__.'/../../views/h5p' => resource_path('views/vendor/laravel-h5p'),
+            __DIR__ . '/../../views/h5p' => resource_path('views/vendor/laravel-h5p'),
         ], 'laravel-h5p-views');
 
         // migrations
-        $this->loadMigrationsFrom(__DIR__.'/../../migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../migrations');
         $this->publishes([
-            __DIR__.'/../../migrations/' => database_path('migrations'),
+            __DIR__ . '/../../migrations/' => database_path('migrations'),
         ], 'laravel-h5p-migrations');
 
         // h5p assets
         $this->publishes([
-            __DIR__.'/../../assets' => public_path('assets/vendor/laravel-h5p'),
+            __DIR__ . '/../../assets' => public_path('assets/vendor/laravel-h5p'),
             base_path('vendor/h5p/h5p-core/fonts') => public_path('assets/vendor/h5p/h5p-core/fonts'),
             base_path('vendor/h5p/h5p-core/images') => public_path('assets/vendor/h5p/h5p-core/images'),
             base_path('vendor/h5p/h5p-core/js') => public_path('assets/vendor/h5p/h5p-core/js'),

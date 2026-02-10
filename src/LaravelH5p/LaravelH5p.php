@@ -88,46 +88,46 @@ class LaravelH5p
 
     public static function get_url($path = '')
     {
-        return url('/assets/vendor'.$path);
+        return url('/assets/vendor' . $path);
     }
 
     public static function get_h5p_storage($path = '', $absolute = false)
     {
         if ($absolute) {
-            return new LaravelH5pStorage(storage_path('h5p'.$path));
-//            return storage_path('h5p' . $path);
+            return new LaravelH5pStorage(storage_path('h5p' . $path));
+            //            return storage_path('h5p' . $path);
         } else {
-            return self::get_url('/h5p'.$path);
+            return self::get_url('/h5p' . $path);
         }
     }
 
     public static function get_laravelh5p_url($path = '')
     {
-        return self::get_url('/laravel-h5p'.$path);
+        return self::get_url('/laravel-h5p' . $path);
     }
 
     public static function get_h5p_url($path = '')
     {
-        return self::get_url('/h5p'.$path);
+        return self::get_url('/h5p' . $path);
     }
 
     public static function get_h5pcore_url($path = '')
     {
-        return self::get_h5p_url('/h5p-core'.$path);
+        return self::get_h5p_url('/h5p-core' . $path);
     }
 
     public static function get_h5peditor_url($path = '')
     {
-        return self::get_h5p_url('/h5p-editor'.$path);
+        return self::get_h5p_url('/h5p-editor' . $path);
     }
 
     public static function get_h5plibrary_url($path = '', $absolute = false)
     {
-        $return = self::get_url('/h5p'.$path);
+        $return = self::get_url('/h5p' . $path);
 
         if ($absolute) {
-            return storage_path('h5p/'.realpath($return));
-//            return storage('/h5p/libraries' . $path);
+            return storage_path('h5p/' . realpath($return));
+            //            return storage('/h5p/libraries' . $path);
         } else {
             return $return;
         }
@@ -169,7 +169,7 @@ class LaravelH5p
         // Detemine embed type
         $embed = H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
         // Make sure content isn't added twice
-        $cid = 'cid-'.$content['id'];
+        $cid = 'cid-' . $content['id'];
         if (!isset($settings['contents'][$cid])) {
             $settings['contents'][$cid] = self::get_content_settings($content);
             $core = self::$core;
@@ -179,13 +179,13 @@ class LaravelH5p
             self::alter_assets($files, $preloaded_dependencies, $embed);
             if ($embed === 'div') {
                 foreach ($files['scripts'] as $script) {
-                    $url = $script->path.$script->version;
+                    $url = $script->path . $script->version;
                     if (!in_array($url, $settings['loadedJs'])) {
                         $settings['loadedJs'][] = self::get_h5plibrary_url($url);
                     }
                 }
                 foreach ($files['styles'] as $style) {
-                    $url = $style->path.$style->version;
+                    $url = $style->path . $style->version;
                     if (!in_array($url, $settings['loadedCss'])) {
                         $settings['loadedCss'][] = self::get_h5plibrary_url($url);
                     }
@@ -199,12 +199,12 @@ class LaravelH5p
         if ($embed === 'div') {
             return [
                 'settings' => $settings,
-                'embed'    => '<div class="h5p-content" data-content-id="'.$content['id'].'"></div>',
+                'embed'    => '<div class="h5p-content" data-content-id="' . $content['id'] . '"></div>',
             ];
         } else {
             return [
                 'settings' => $settings,
-                'embed'    => '<div class="h5p-iframe-wrapper"><iframe id="h5p-iframe-'.$content['id'].'" class="h5p-iframe" data-content-id="'.$content['id'].'" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>',
+                'embed'    => '<div class="h5p-iframe-wrapper"><iframe id="h5p-iframe-' . $content['id'] . '" class="h5p-iframe" data-content-id="' . $content['id'] . '" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>',
             ];
         }
     }
@@ -230,7 +230,7 @@ class LaravelH5p
             'saveFreq' => config('laravel-h5p.h5p_save_content_state', false) ? config('laravel-h5p.h5p_save_content_frequency', 30) : false,
             'siteUrl'  => config('laravel-h5p.domain'),
             'l10n'     => [
-                'H5P' => trans('laravel-h5p.h5p'),
+                'H5P' => self::get_h5p_l10n(),
             ],
             'hubIsEnabled' => config('laravel-h5p.h5p_hub_is_enabled'),
         ];
@@ -243,6 +243,37 @@ class LaravelH5p
         }
 
         return $settings;
+    }
+
+    /**
+     * H5P frontend l10n for namespace "H5P". Ensures required keys are always set.
+     *
+     * @return array
+     */
+    private static function get_h5p_l10n()
+    {
+        $defaults = [
+            'reuse'                 => 'Reuse',
+            'reuseContent'          => 'Reuse Content',
+            'reuseDescription'      => 'Reuse this content.',
+            'embed'                 => 'Embed',
+            'embedDescription'      => 'View the embed code for this content.',
+            'download'              => 'Download',
+            'downloadDescription'   => 'Download this content as a H5P file.',
+            'copyrights'            => 'Copyrights',
+            'copyrightsDescription' => 'View copyright information for this content.',
+            'h5pDescription'        => 'Visit H5P.org to check out more cool content.',
+        ];
+        $fromLang = is_array(trans('laravel-h5p.h5p')) ? trans('laravel-h5p.h5p') : [];
+        $merged = array_merge($defaults, $fromLang);
+        // Force required keys so they are never missing or empty in JSON
+        foreach ($defaults as $key => $value) {
+            if (!isset($merged[$key]) || (string) $merged[$key] === '') {
+                $merged[$key] = $value;
+            }
+        }
+
+        return $merged;
     }
 
     private static function get_core_files($settings = [])
@@ -258,10 +289,10 @@ class LaravelH5p
         $settings['core']['styles'][] = self::get_laravelh5p_url('/css/laravel-h5p.css');
 
         foreach (H5PCore::$styles as $style) {
-            $settings['core']['styles'][] = self::get_h5pcore_url('/'.$style);
+            $settings['core']['styles'][] = self::get_h5pcore_url('/' . $style);
         }
         foreach (H5PCore::$scripts as $script) {
-            $settings['core']['scripts'][] = self::get_h5pcore_url('/'.$script);
+            $settings['core']['scripts'][] = self::get_h5pcore_url('/' . $script);
         }
 
         $settings['core']['scripts'][] = self::get_h5peditor_url('/scripts/h5peditor-editor.js');
@@ -282,9 +313,9 @@ class LaravelH5p
                 'width'  => 50,
                 'height' => 50,
             ],
-            'ajaxPath' => route('h5p.ajax').'/',
-            // for checkeditor,
-            'libraryUrl'         => self::get_h5peditor_url(),
+            'ajaxPath' => route('h5p.ajax') . '/',
+            // for checkeditor; trailing slash required so basePath + 'styles/...' resolves correctly
+            'libraryUrl'         => rtrim(self::get_h5peditor_url(), '/') . '/',
             'copyrightSemantics' => self::$contentvalidator->getCopyrightSemantics(),
             'metadataSemantics'  => self::$contentvalidator->getMetadataSemantics(),
             'assets'             => [],
@@ -312,17 +343,19 @@ class LaravelH5p
 
         // add editor styles
         foreach (H5peditor::$styles as $style) {
-            $settings['editor']['assets']['css'][] = self::get_h5peditor_url('/'.$style);
+            $settings['editor']['assets']['css'][] = self::get_h5peditor_url('/' . $style);
         }
         // Add editor JavaScript
         foreach (H5peditor::$scripts as $script) {
             // We do not want the creator of the iframe inside the iframe
             if ($script !== 'scripts/h5peditor-editor.js') {
-                $settings['editor']['assets']['js'][] = self::get_h5peditor_url('/'.$script);
+                $settings['editor']['assets']['js'][] = self::get_h5peditor_url('/' . $script);
             }
         }
 
-        $language_script = '/language/'.self::get_language().'.js';
+        // Use editor language that has a .js file (fallback to 'en' to avoid "Missing translations for library core")
+        $editorLang = self::get_editor_language();
+        $language_script = '/language/' . $editorLang . '.js';
         $settings['editor']['assets']['js'][] = self::get_h5peditor_url($language_script);
 
         if ($content) {
@@ -340,7 +373,7 @@ class LaravelH5p
     public static function get_content_settings($content)
     {
         $safe_parameters = self::$core->filterParameters($content);
-//        if (has_action('h5p_alter_filtered_parameters')) {
+        //        if (has_action('h5p_alter_filtered_parameters')) {
         //            // Parse the JSON parameters
         //            $decoded_parameters = json_decode($safe_parameters);
         //            /**
@@ -365,8 +398,8 @@ class LaravelH5p
             'jsonContent'     => $safe_parameters,
             'fullScreen'      => $content['library']['fullscreen'],
             'exportUrl'       => config('laravel-h5p.h5p_export') ? route('h5p.export', [$content['id']]) : '',
-            'embedCode'       => '<iframe src="'.route('h5p.embed', ['id' => $content['id']]).'" width=":w" height=":h" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
-            'resizeCode'      => '<script src="'.self::get_h5pcore_url('/js/h5p-resizer.js').'" charset="UTF-8"></script>',
+            'embedCode'       => '<iframe src="' . route('h5p.embed', ['id' => $content['id']]) . '" width=":w" height=":h" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+            'resizeCode'      => '<script src="' . self::get_h5pcore_url('/js/h5p-resizer.js') . '" charset="UTF-8"></script>',
             'url'             => route('h5p.embed', ['id' => $content['id']]),
             'title'           => $content['title'],
             'displayOptions'  => self::$core->getDisplayOptionsForView($content['disable'], $author_id),
@@ -379,7 +412,8 @@ class LaravelH5p
 
         // Get preloaded user data for the current user
         if (config('laravel-h5p.h5p_save_content_state') && Auth::check()) {
-            $results = DB::select('
+            $results = DB::select(
+                '
                 SELECT
                 hcud.sub_content_id,
                 hcud.data_id,
@@ -387,7 +421,8 @@ class LaravelH5p
                 FROM h5p_contents_user_data hcud
                 WHERE user_id = ?
                 AND content_id = ?
-                AND preload = 1', [Auth::user()->id, $content['id']]
+                AND preload = 1',
+                [Auth::user()->id, $content['id']]
             );
 
             if ($results) {
@@ -411,7 +446,7 @@ class LaravelH5p
         $embed = H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
 
         // Make sure content isn't added twice
-        $cid = 'cid-'.$content['id'];
+        $cid = 'cid-' . $content['id'];
         if (!isset($settings['contents'][$cid])) {
 
             // Load File
@@ -427,15 +462,15 @@ class LaravelH5p
             self::alter_assets($files, $preloaded_dependencies, $embed);
 
             if ($embed === 'div') {
-//                $this->enqueue_assets($files);
+                //                $this->enqueue_assets($files);
                 foreach ($files['scripts'] as $script) {
-                    $url = $script->path.$script->version;
+                    $url = $script->path . $script->version;
                     if (!in_array($url, $settings['loadedJs'])) {
                         $settings['loadedJs'][] = self::get_h5plibrary_url($url);
                     }
                 }
                 foreach ($files['styles'] as $style) {
-                    $url = $style->path.$style->version;
+                    $url = $style->path . $style->version;
                     if (!in_array($url, $settings['loadedCss'])) {
                         $settings['loadedCss'][] = self::get_h5plibrary_url($url);
                     }
@@ -493,5 +528,18 @@ class LaravelH5p
     public static function get_language()
     {
         return config('laravel-h5p.language');
+    }
+
+    /**
+     * Language code for H5P editor UI (language/*.js). Falls back to 'en' if the
+     * configured language file does not exist, so the editor always has core translations.
+     *
+     * @return string
+     */
+    public static function get_editor_language()
+    {
+        $lang = config('laravel-h5p.language', 'en');
+        $path = base_path('vendor/h5p/h5p-editor/language/' . $lang . '.js');
+        return file_exists($path) ? $lang : 'en';
     }
 }
