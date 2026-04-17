@@ -10,6 +10,8 @@ use Aditya\LaravelH5P\Console\Commands\CleanupCommand;
 use Aditya\LaravelH5P\Console\Commands\StatusCommand;
 use Aditya\LaravelH5P\Helpers\H5pHelper;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 
 class LaravelH5pServiceProvider extends ServiceProvider
 {
@@ -96,5 +98,29 @@ class LaravelH5pServiceProvider extends ServiceProvider
             base_path('vendor/h5p/h5p-editor/scripts') => public_path('assets/vendor/h5p/h5p-editor/scripts'),
             base_path('vendor/h5p/h5p-editor/styles') => public_path('assets/vendor/h5p/h5p-editor/styles'),
         ], 'laravel-h5p-assets');
+
+        View::composer(['laravel-h5p::content.create', 'laravel-h5p::content.edit'], function (\Illuminate\View\View $view): void {
+            if (!config('laravel-h5p.h5p_editor_chunk_upload_enabled')) {
+                return;
+            }
+            $data = $view->getData();
+            if (!isset($data['settings']) || !is_array($data['settings'])) {
+                return;
+            }
+            $settings = $data['settings'];
+            $settings['editor']['chunkUpload'] = [
+                'enabled'        => true,
+                'thresholdBytes' => (int) config('laravel-h5p.h5p_editor_chunk_threshold_bytes'),
+                'chunkBytes'     => (int) config('laravel-h5p.h5p_editor_chunk_max_chunk_bytes'),
+            ];
+            if (!isset($settings['editor']['assets'])) {
+                $settings['editor']['assets'] = ['js' => [], 'css' => []];
+            }
+            if (!isset($settings['editor']['assets']['js'])) {
+                $settings['editor']['assets']['js'] = [];
+            }
+            $settings['editor']['assets']['js'][] = asset('js/h5p-editor-chunk-upload.js') . '?v=1';
+            $view->with('settings', $settings);
+        });
     }
 }

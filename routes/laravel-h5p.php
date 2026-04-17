@@ -26,6 +26,8 @@ Route::group(['middleware' => ['web']], function () {
         Route::post('ajax/files', 'Aditya\LaravelH5P\Http\Controllers\AjaxController@files')->name('h5p.ajax.files');
         Route::get('ajax/finish', 'Aditya\LaravelH5P\Http\Controllers\AjaxController@finish')->name('h5p.ajax.finish');
         Route::post('ajax/content-user-data', 'Aditya\LaravelH5P\Http\Controllers\AjaxController@contentUserData')->name('h5p.ajax.content-user-data');
+        Route::post('ajax/files/chunk', 'Aditya\LaravelH5P\Http\Controllers\H5pEditorChunkUploadController@storeChunk')->name('h5p.ajax.files.chunk');
+        Route::post('ajax/files/chunk-assemble', 'Aditya\LaravelH5P\Http\Controllers\H5pEditorChunkUploadController@assemble')->name('h5p.ajax.files.chunk-assemble');
     }
 
     // export

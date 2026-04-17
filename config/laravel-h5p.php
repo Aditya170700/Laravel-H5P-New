@@ -40,4 +40,13 @@ return [
     'h5p_check_h5p_requirements'        => false,
     'h5p_hub_is_enabled'                => true,
     'h5p_version'                       => '1.23.0',
+
+    // Max POST size (bytes or e.g. 128M) for H5P editor file uploads (video, etc.)
+    'h5p_editor_max_post_size'          => env('H5P_EDITOR_MAX_POST_SIZE', '128M'),
+
+    // Chunked editor uploads (iframe): many small POSTs then server-side merge into one file for H5P FILES handler.
+    'h5p_editor_chunk_upload_enabled'      => env('H5P_EDITOR_CHUNK_UPLOAD_ENABLED', false),
+    'h5p_editor_chunk_threshold_bytes'     => (int) env('H5P_EDITOR_CHUNK_THRESHOLD_BYTES', 5242880),
+    'h5p_editor_chunk_max_chunk_bytes'     => (int) env('H5P_EDITOR_CHUNK_MAX_CHUNK_BYTES', 5242880),
+    'h5p_editor_chunk_max_total_bytes'     => (int) env('H5P_EDITOR_CHUNK_MAX_TOTAL_BYTES', 536870912),
 ];
