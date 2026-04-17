@@ -13,6 +13,7 @@
 namespace Aditya\LaravelH5P\Storages;
 
 use H5PFileStorage;
+use Illuminate\Support\Facades\Log;
 
 //use Illuminate\Filesystem\Filesystem;
 //use Symfony\Component\Finder\Finder;
@@ -345,10 +346,32 @@ class LaravelH5pStorage implements H5PFileStorage
         if (!empty($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
             copy($_FILES['file']['tmp_name'], $path);
         } else {
-            // Fallback: read from tmp_name if set (e.g. after move)
+            // Fallback: tmp_name may not be an "uploaded file" (e.g. chunk-assembled server file).
+            // Never read the entire file into memory (videos can be hundreds of MB).
             $tmp = $_FILES['file']['tmp_name'] ?? null;
             if ($tmp && is_readable($tmp)) {
-                file_put_contents($path, file_get_contents($tmp));
+                $in = $out = null;
+
+                try {
+                    $in = fopen($tmp, 'rb');
+                    $out = fopen($path, 'wb');
+
+                    if (!$in || !$out) {
+                        throw new \RuntimeException('Failed to open file streams for H5P editor upload.');
+                    }
+
+                    stream_copy_to_stream($in, $out);
+                } catch (\Throwable $e) {
+                    Log::warning('H5P saveFile stream copy failed', [
+                        'tmp' => $tmp,
+                        'dest' => $path,
+                        'error' => $e->getMessage(),
+                    ]);
+                    throw $e;
+                } finally {
+                    if (is_resource($in)) fclose($in);
+                    if (is_resource($out)) fclose($out);
+                }
             }
         }
 
